@@ -21,21 +21,32 @@
  */
 package com.cybercom.mojo.jsmvc;
 
+import java.io.File;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
 /**
- * @goal build-js
+ * @goal compress
  * @phase compile
- * @description Some desc to come
+ * @description Compresses application to one javascript file and one css file
  * 
  * @author Ivar Grimstad (ivar.grimstad@cybercom.com)
  */
 public class BuildMojo extends AbstractMojo {
 
+   /**
+    * @parameter expression="${jsSourceDir}" default-value="${basedir}${file.separator}src${file.separator}main${file.separator}js"
+    */
+   private String jsSourceDir;
+
+
    @Override
    public void execute() throws MojoExecutionException, MojoFailureException {
-      throw new UnsupportedOperationException("Not supported yet.");
+      
+      File rootDir = new File(jsSourceDir);
+      
+      
+      
    }
 }
