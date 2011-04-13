@@ -29,8 +29,9 @@ import java.io.InputStreamReader;
 import org.apache.maven.plugin.AbstractMojo;
 
 /**
- *
- * @author Ivar Grimstad (ivar.grimstad@cybercomgroup.com)
+ * Abstract base class for JavaScriptMVC maven plugins.
+ * 
+ * @author Ivar Grimstad (ivar.grimstad@cybercom.com)
  */
 public abstract class AbstractJavaScriptMVCMojo extends AbstractMojo {
 
@@ -42,6 +43,11 @@ public abstract class AbstractJavaScriptMVCMojo extends AbstractMojo {
     */
    protected String outputDirectory;
 
+   /**
+    * Executes os specific command.
+    * 
+    * @param cmd the command(s)
+    */
    protected void executeCommand(String... cmd) {
       try {
          ProcessBuilder pb = new ProcessBuilder(cmd);

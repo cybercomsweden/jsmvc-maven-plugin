@@ -56,6 +56,9 @@ public class CompressMojo extends AbstractJavaScriptMVCMojo {
     */
    private String buildScript;
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -99,7 +102,7 @@ public class CompressMojo extends AbstractJavaScriptMVCMojo {
       }
    }
 
-   public File createCompressScriptLinux() throws IOException {
+   private File createCompressScriptLinux() throws IOException {
 
       File targetDir = new File(outputDirectory);
       File file = new File(targetDir, COMPRESS_SCRIPT_LINUX);
@@ -121,7 +124,7 @@ public class CompressMojo extends AbstractJavaScriptMVCMojo {
       return file;
    }
 
-   public File createCompressScriptWindows() throws IOException {
+   private File createCompressScriptWindows() throws IOException {
 
       File targetDir = new File(outputDirectory);
       File file = new File(targetDir, COMPRESS_SCRIPT_WINDOWS);
