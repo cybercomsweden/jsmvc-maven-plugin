@@ -87,11 +87,11 @@ public class CompressMojo extends AbstractMojo {
       try {
 
          File compressFile = createCompressScriptLinux();
-         executeCommand("chmod +x " + compressFile.getAbsolutePath(), false, false);
-         executeCommand("chmod +x " + outputDirectory + "/" + finalName + "/js", false, false);
+         executeCommand(false, false, "chmod +x " + compressFile.getAbsolutePath());
+         executeCommand(false, false, "chmod +x " + outputDirectory + "/" + finalName + "/js");
          getLog().info("Executing script " + compressFile.getAbsolutePath().replaceAll(" ", "\\ "));
 //         executeCommand(outputDirectory + File.separator + COMPRESS_SCRIPT_LINUX, false);
-         executeCommand(COMPRESS_SCRIPT_LINUX, false, true);
+         executeCommand(false, true, "./" + COMPRESS_SCRIPT_LINUX);
 
       } catch (IOException e) {
          throw new MojoExecutionException(e.getMessage());
@@ -104,30 +104,30 @@ public class CompressMojo extends AbstractMojo {
 
          File compressFile = createCompressScriptWindows();
          getLog().info("Executing script " + compressFile.getAbsolutePath());
-         executeCommand(COMPRESS_SCRIPT_WINDOWS, true, false);
+         executeCommand(true, false, "cmd", "/c", COMPRESS_SCRIPT_WINDOWS);
 
       } catch (IOException e) {
          throw new MojoExecutionException(e.getMessage());
       }
    }
 
-   private void executeCommand(String cmd, boolean windows, boolean test) {
+   private void executeCommand(boolean windows, boolean test, String... cmd) {
       try {
 
          Runtime run = Runtime.getRuntime();
          Process pr;
 
          if (test) {
-               ProcessBuilder pb = new ProcessBuilder("./" + cmd);
-               pb.directory(new File(outputDirectory));
-               pr = pb.start();
+            ProcessBuilder pb = new ProcessBuilder(cmd);
+            pb.directory(new File(outputDirectory));
+            pr = pb.start();
          } else {
             if (windows) {
-               ProcessBuilder pb = new ProcessBuilder("cmd", "/c", cmd);
+               ProcessBuilder pb = new ProcessBuilder(cmd);
                pb.directory(new File(outputDirectory));
                pr = pb.start();
             } else {
-               pr = run.exec(cmd);
+               pr = run.exec(cmd[0]);
             }
          }
          InputStream is = pr.getInputStream();
