@@ -25,8 +25,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.Locale;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -40,7 +42,8 @@ import org.apache.maven.plugin.MojoFailureException;
  */
 public class CompressMojo extends AbstractMojo {
 
-   private static final String COMPRESS_SCRIPT = "compress.sh";
+   private static final String COMPRESS_SCRIPT_LINUX = "compress.sh";
+   private static final String COMPRESS_SCRIPT_WINDOWS = "compress.bat";
    /**
     * @parameter expression="${moduleName}"
     * @required
@@ -59,7 +62,7 @@ public class CompressMojo extends AbstractMojo {
     */
    private String finalName;
    /**
-    * @parameter expression="${buildScript}" default-value="scripts/build.js"
+    * @parameter expression="${buildScript}" default-value="scripts${file.separator}build.js"
     * @required
     */
    private String buildScript;
@@ -72,39 +75,78 @@ public class CompressMojo extends AbstractMojo {
          targetFolder.mkdirs();
       }
 
+      if (System.getProperty("os.name").toLowerCase(Locale.US).startsWith("windows")) {
+         executeWindows();
+      } else {
+         executeLinux();
+      }
+   }
+
+   private void executeLinux() throws MojoExecutionException {
+
       try {
-         File compressFile = createCompressScript();
-         executeCommand("chmod +x " + compressFile.getAbsolutePath());
-         executeCommand("chmod +x " + outputDirectory + "/" + finalName + "/js");
+
+         File compressFile = createCompressScriptLinux();
+         executeCommand("chmod +x " + compressFile.getAbsolutePath(), false, false);
+         executeCommand("chmod +x " + outputDirectory + "/" + finalName + "/js", false, false);
          getLog().info("Executing script " + compressFile.getAbsolutePath().replaceAll(" ", "\\ "));
-         executeCommand(outputDirectory + File.separator + COMPRESS_SCRIPT);
+//         executeCommand(outputDirectory + File.separator + COMPRESS_SCRIPT_LINUX, false);
+         executeCommand(COMPRESS_SCRIPT_LINUX, false, true);
+
       } catch (IOException e) {
          throw new MojoExecutionException(e.getMessage());
       }
    }
 
-   private void executeCommand(String cmd) {
+   private void executeWindows() throws MojoExecutionException {
+
       try {
+
+         File compressFile = createCompressScriptWindows();
+         getLog().info("Executing script " + compressFile.getAbsolutePath());
+         executeCommand(COMPRESS_SCRIPT_WINDOWS, true, false);
+
+      } catch (IOException e) {
+         throw new MojoExecutionException(e.getMessage());
+      }
+   }
+
+   private void executeCommand(String cmd, boolean windows, boolean test) {
+      try {
+
          Runtime run = Runtime.getRuntime();
-         Process pr = run.exec(cmd);
-         pr.waitFor();
-         BufferedReader buf = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-         String line = "";
-         while ((line = buf.readLine()) != null) {
+         Process pr;
+
+         if (test) {
+               ProcessBuilder pb = new ProcessBuilder("./" + cmd);
+               pb.directory(new File(outputDirectory));
+               pr = pb.start();
+         } else {
+            if (windows) {
+               ProcessBuilder pb = new ProcessBuilder("cmd", "/c", cmd);
+               pb.directory(new File(outputDirectory));
+               pr = pb.start();
+            } else {
+               pr = run.exec(cmd);
+            }
+         }
+         InputStream is = pr.getInputStream();
+         InputStreamReader isr = new InputStreamReader(is);
+         BufferedReader br = new BufferedReader(isr);
+         String line;
+         while ((line = br.readLine()) != null) {
             getLog().info(line);
          }
 
       } catch (IOException e) {
          getLog().error("IO: " + e.getMessage());
-      } catch (InterruptedException e) {
-         getLog().error("Interrupt: " + e.getMessage());
       }
    }
 
-   public File createCompressScript() throws IOException {
+   public File createCompressScriptLinux() throws IOException {
 
       File targetDir = new File(outputDirectory);
-      File file = new File(targetDir, COMPRESS_SCRIPT);
+      File file = new File(targetDir, COMPRESS_SCRIPT_LINUX);
       file.setExecutable(true);
 
       PrintWriter writer = new PrintWriter(new FileWriter(file));
@@ -114,6 +156,29 @@ public class CompressMojo extends AbstractMojo {
       writer.print(File.separator);
       writer.println(finalName);
       writer.print("./js ");
+      writer.print(moduleName);
+      writer.print(File.separator);
+      writer.println(buildScript);
+
+      writer.flush();
+      writer.close();
+      return file;
+   }
+
+   public File createCompressScriptWindows() throws IOException {
+
+      File targetDir = new File(outputDirectory);
+      File file = new File(targetDir, COMPRESS_SCRIPT_WINDOWS);
+      file.setExecutable(true);
+
+      PrintWriter writer = new PrintWriter(new FileWriter(file));
+      writer.println("echo Here we go");
+      writer.print("cd ");
+      writer.print(outputDirectory);
+      writer.print(File.separator);
+      writer.println(finalName);
+      writer.println("echo moved to my directory");
+      writer.print("js.bat ");
       writer.print(moduleName);
       writer.print(File.separator);
       writer.println(buildScript);
