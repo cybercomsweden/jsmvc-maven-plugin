@@ -87,11 +87,10 @@ public class CompressMojo extends AbstractMojo {
       try {
 
          File compressFile = createCompressScriptLinux();
-         executeCommand(false, false, "chmod +x " + compressFile.getAbsolutePath());
-         executeCommand(false, false, "chmod +x " + outputDirectory + "/" + finalName + "/js");
+         executeCommand("chmod", "+x", compressFile.getAbsolutePath());
+         executeCommand("chmod", "+x", outputDirectory + "/" + finalName + "/js");
          getLog().info("Executing script " + compressFile.getAbsolutePath().replaceAll(" ", "\\ "));
-//         executeCommand(outputDirectory + File.separator + COMPRESS_SCRIPT_LINUX, false);
-         executeCommand(false, true, "./" + COMPRESS_SCRIPT_LINUX);
+         executeCommand("./" + COMPRESS_SCRIPT_LINUX);
 
       } catch (IOException e) {
          throw new MojoExecutionException(e.getMessage());
@@ -104,36 +103,25 @@ public class CompressMojo extends AbstractMojo {
 
          File compressFile = createCompressScriptWindows();
          getLog().info("Executing script " + compressFile.getAbsolutePath());
-         executeCommand(true, false, "cmd", "/c", COMPRESS_SCRIPT_WINDOWS);
+         executeCommand("cmd", "/c", COMPRESS_SCRIPT_WINDOWS);
 
       } catch (IOException e) {
          throw new MojoExecutionException(e.getMessage());
       }
    }
 
-   private void executeCommand(boolean windows, boolean test, String... cmd) {
+   private void executeCommand(String... cmd) {
       try {
 
-         Runtime run = Runtime.getRuntime();
-         Process pr;
-
-         if (test) {
-            ProcessBuilder pb = new ProcessBuilder(cmd);
-            pb.directory(new File(outputDirectory));
-            pr = pb.start();
-         } else {
-            if (windows) {
-               ProcessBuilder pb = new ProcessBuilder(cmd);
-               pb.directory(new File(outputDirectory));
-               pr = pb.start();
-            } else {
-               pr = run.exec(cmd[0]);
-            }
-         }
+         ProcessBuilder pb = new ProcessBuilder(cmd);
+         pb.directory(new File(outputDirectory));
+         Process pr = pb.start();
+         
          InputStream is = pr.getInputStream();
          InputStreamReader isr = new InputStreamReader(is);
          BufferedReader br = new BufferedReader(isr);
          String line;
+         
          while ((line = br.readLine()) != null) {
             getLog().info(line);
          }
