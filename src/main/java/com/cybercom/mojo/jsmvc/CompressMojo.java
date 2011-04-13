@@ -21,15 +21,11 @@
  */
 package com.cybercom.mojo.jsmvc;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Locale;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -40,7 +36,7 @@ import org.apache.maven.plugin.MojoFailureException;
  * 
  * @author Ivar Grimstad (ivar.grimstad@cybercom.com)
  */
-public class CompressMojo extends AbstractMojo {
+public class CompressMojo extends AbstractJavaScriptMVCMojo {
 
    private static final String COMPRESS_SCRIPT_LINUX = "compress.sh";
    private static final String COMPRESS_SCRIPT_WINDOWS = "compress.bat";
@@ -49,13 +45,6 @@ public class CompressMojo extends AbstractMojo {
     * @required
     */
    private String moduleName;
-   /**
-    * Location of the file.
-    *
-    * @parameter expression="${project.build.directory}"
-    * @required
-    */
-   private String outputDirectory;
    /**
     * @parameter expression="${project.build.finalName}"
     * @required
@@ -107,27 +96,6 @@ public class CompressMojo extends AbstractMojo {
 
       } catch (IOException e) {
          throw new MojoExecutionException(e.getMessage());
-      }
-   }
-
-   private void executeCommand(String... cmd) {
-      try {
-
-         ProcessBuilder pb = new ProcessBuilder(cmd);
-         pb.directory(new File(outputDirectory));
-         Process pr = pb.start();
-         
-         InputStream is = pr.getInputStream();
-         InputStreamReader isr = new InputStreamReader(is);
-         BufferedReader br = new BufferedReader(isr);
-         String line;
-         
-         while ((line = br.readLine()) != null) {
-            getLog().info(line);
-         }
-
-      } catch (IOException e) {
-         getLog().error("IO: " + e.getMessage());
       }
    }
 
