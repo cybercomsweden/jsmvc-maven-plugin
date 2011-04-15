@@ -28,40 +28,29 @@ import java.io.PrintWriter;
 import org.apache.maven.plugin.MojoExecutionException;
 
 /**
- * @goal compress
- * @phase package
- * @description Compresses application to one javascript file and one css file
+ * @goal qunit
+ * @phase test
+ * @description Runs qunit tests.
  * 
  * @author Ivar Grimstad (ivar.grimstad@cybercom.com)
  */
-public class CompressMojo extends AbstractJavaScriptMVCMojo {
+public class TestMojo extends AbstractJavaScriptMVCMojo {
 
-   private static final String COMPRESS_SCRIPT_LINUX = "compress.sh";
-   private static final String COMPRESS_SCRIPT_WINDOWS = "compress.bat";
-   /**
-    * @parameter expression="${moduleName}"
-    * @required
-    */
-   private String moduleName;
-   /**
-    * @parameter expression="${buildScript}" default-value="scripts${file.separator}build.js"
-    * @required
-    */
-   private String buildScript;
+   private static final String QUNIT_SCRIPT_LINUX = "compress.sh";
+   private static final String QUNIT_SCRIPT_WINDOWS = "compress.bat";
 
    /**
     * {@inheritDoc}}
     */
    @Override
    protected void executeLinux() throws MojoExecutionException {
-
       try {
 
-         File compressFile = createCompressScriptLinux();
+         File compressFile = createQUnitScriptLinux();
          executeCommand("chmod", "+x", compressFile.getAbsolutePath());
          executeCommand("chmod", "+x", outputDirectory + "/" + finalName + "/js");
          getLog().info("Executing script " + compressFile.getAbsolutePath().replaceAll(" ", "\\ "));
-         executeCommand("./" + COMPRESS_SCRIPT_LINUX);
+         executeCommand("./" + QUNIT_SCRIPT_LINUX);
 
       } catch (IOException e) {
          throw new MojoExecutionException(e.getMessage());
@@ -73,22 +62,21 @@ public class CompressMojo extends AbstractJavaScriptMVCMojo {
     */
    @Override
    protected void executeWindows() throws MojoExecutionException {
-
       try {
 
-         File compressFile = createCompressScriptWindows();
+         File compressFile = createQUnitScriptWindows();
          getLog().info("Executing script " + compressFile.getAbsolutePath());
-         executeCommand("cmd", "/c", COMPRESS_SCRIPT_WINDOWS);
+         executeCommand("cmd", "/c", QUNIT_SCRIPT_WINDOWS);
 
       } catch (IOException e) {
          throw new MojoExecutionException(e.getMessage());
       }
    }
-
-   private File createCompressScriptLinux() throws IOException {
+   
+      private File createQUnitScriptLinux() throws IOException {
 
       File targetDir = new File(outputDirectory);
-      File file = new File(targetDir, COMPRESS_SCRIPT_LINUX);
+      File file = new File(targetDir, QUNIT_SCRIPT_LINUX);
       file.setExecutable(true);
 
       PrintWriter writer = new PrintWriter(new FileWriter(file));
@@ -98,19 +86,19 @@ public class CompressMojo extends AbstractJavaScriptMVCMojo {
       writer.print(File.separator);
       writer.println(finalName);
       writer.print("./js ");
-      writer.print(moduleName);
-      writer.print(File.separator);
-      writer.println(buildScript);
+//      writer.print(moduleName);
+//      writer.print(File.separator);
+//      writer.println(buildScript);
 
       writer.flush();
       writer.close();
       return file;
    }
 
-   private File createCompressScriptWindows() throws IOException {
+   private File createQUnitScriptWindows() throws IOException {
 
       File targetDir = new File(outputDirectory);
-      File file = new File(targetDir, COMPRESS_SCRIPT_WINDOWS);
+      File file = new File(targetDir, QUNIT_SCRIPT_WINDOWS);
       file.setExecutable(true);
 
       PrintWriter writer = new PrintWriter(new FileWriter(file));
@@ -119,12 +107,13 @@ public class CompressMojo extends AbstractJavaScriptMVCMojo {
       writer.print(File.separator);
       writer.println(finalName);
       writer.print("js.bat ");
-      writer.print(moduleName);
-      writer.print(File.separator);
-      writer.println(buildScript);
+//      writer.print(moduleName);
+//      writer.print(File.separator);
+//      writer.println(buildScript);
 
       writer.flush();
       writer.close();
       return file;
    }
+
 }

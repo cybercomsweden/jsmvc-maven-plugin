@@ -55,12 +55,6 @@
          <version>3.0-alpha-2</version>
       </dependency>
       
-      <dependency>
-         <groupId>jsch</groupId>
-         <artifactId>jsch</artifactId>
-         <version>0.1.29</version>
-      </dependency>
-      
       <!-- test -->
       <dependency>
          <groupId>junit</groupId>
@@ -77,13 +71,13 @@
          <groupId>org.powermock</groupId>
          <artifactId>powermock-module-junit4</artifactId>
          <scope>test</scope>
-         <version>1.4.6</version>
+         <version>1.4.8</version>
       </dependency>
       <dependency>
          <groupId>org.powermock</groupId>
          <artifactId>powermock-api-easymock</artifactId>
          <scope>test</scope>
-         <version>1.4.6</version>
+         <version>1.4.8</version>
       </dependency>
 
    </dependencies>

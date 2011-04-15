@@ -26,7 +26,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Locale;
 import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
 
 /**
  * Abstract base class for JavaScriptMVC maven plugins.
@@ -43,6 +46,30 @@ public abstract class AbstractJavaScriptMVCMojo extends AbstractMojo {
     */
    protected String outputDirectory;
 
+   /**
+    * @parameter expression="${project.build.finalName}"
+    * @required
+    */
+   protected String finalName;
+
+   /**
+    * {@inheritDoc}
+    */
+   @Override
+   public final void execute() throws MojoExecutionException, MojoFailureException {
+
+      File targetFolder = new File(outputDirectory);
+      if (targetFolder == null || !targetFolder.exists()) {
+         targetFolder.mkdirs();
+      }
+
+      if (System.getProperty("os.name").toLowerCase(Locale.US).startsWith("windows")) {
+         executeWindows();
+      } else {
+         executeLinux();
+      }
+   }
+   
    /**
     * Executes os specific command.
     * 
@@ -64,4 +91,16 @@ public abstract class AbstractJavaScriptMVCMojo extends AbstractMojo {
          getLog().error("IO: " + e.getMessage());
       }
    }
+   
+   /**
+    * 
+    * @throws MojoExecutionException 
+    */
+   protected abstract void executeLinux() throws MojoExecutionException;
+   
+   /**
+    * 
+    * @throws MojoExecutionException 
+    */
+   protected abstract void executeWindows() throws MojoExecutionException;
 }
