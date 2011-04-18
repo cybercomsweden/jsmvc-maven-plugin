@@ -93,13 +93,13 @@ public abstract class AbstractJavaScriptMVCMojo extends AbstractMojo {
    }
    
    /**
-    * 
+    * Executes on Linux.
     * @throws MojoExecutionException 
     */
    protected abstract void executeLinux() throws MojoExecutionException;
    
    /**
-    * 
+    * Executes on Windows.
     * @throws MojoExecutionException 
     */
    protected abstract void executeWindows() throws MojoExecutionException;

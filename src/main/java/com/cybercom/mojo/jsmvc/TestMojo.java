@@ -36,8 +36,8 @@ import org.apache.maven.plugin.MojoExecutionException;
  */
 public class TestMojo extends AbstractJavaScriptMVCMojo {
 
-   private static final String QUNIT_SCRIPT_LINUX = "compress.sh";
-   private static final String QUNIT_SCRIPT_WINDOWS = "compress.bat";
+   private static final String QUNIT_SCRIPT_LINUX = "qunit.sh";
+   private static final String QUNIT_SCRIPT_WINDOWS = "qunit.bat";
 
    /**
     * {@inheritDoc}}

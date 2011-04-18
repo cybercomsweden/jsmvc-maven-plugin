@@ -22,29 +22,27 @@
 package com.cybercom.mojo.jsmvc;
 
 import java.io.BufferedReader;
-import java.io.FileWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.modules.junit4.PowerMockRunner;
-
-import org.junit.Assert.*;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import static org.easymock.EasyMock.expect;
 import static org.powermock.api.easymock.PowerMock.*;
 import static org.powermock.reflect.Whitebox.*;
+import static org.easymock.EasyMock.expect;
 
 /**
  *
  * @author Ivar Grimstad (ivar.grimstad@cybercomgroup.com)
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(CompressMojo.class)
-public class CompressMojoTest {
+@PrepareForTest(TestMojo.class)
+public class TestMojoTest {
 
    private File dirMock = createMock(File.class);
    private File fileMock = createMock(File.class);
@@ -55,14 +53,14 @@ public class CompressMojoTest {
    private InputStream isMock = createMock(InputStream.class);
    private InputStreamReader isrMock = createMock(InputStreamReader.class);
    private BufferedReader brMock = createMock(BufferedReader.class);
-   private CompressMojo mojo = new CompressMojo();
+   private TestMojo mojo = new TestMojo();
 
    @Before
    public void setup() {
       setInternalState(mojo, "outputDirectory", "jall");
       setInternalState(mojo, "finalName", "final");
-      setInternalState(mojo, "moduleName", "module");
-      setInternalState(mojo, "buildScript", "script");
+//      setInternalState(mojo, "moduleName", "module");
+//      setInternalState(mojo, "buildScript", "script");
    }
 
    /**
@@ -72,7 +70,7 @@ public class CompressMojoTest {
    public void testExecuteLinux() throws Exception {
 
       expectNew(File.class, "jall").andReturn(dirMock);
-      expectNew(File.class, dirMock, "compress.sh").andReturn(fileMock);
+      expectNew(File.class, dirMock, "qunit.sh").andReturn(fileMock);
       expect(fileMock.setExecutable(Boolean.TRUE)).andReturn(Boolean.TRUE);
       expectNew(FileWriter.class, fileMock).andReturn(fwMock);
       expectNew(PrintWriter.class, fwMock).andReturn(pwMock);
@@ -82,9 +80,9 @@ public class CompressMojoTest {
       pwMock.print(File.separator);
       pwMock.println("final");
       pwMock.print("./js ");
-      pwMock.print("module");
-      pwMock.print(File.separator);
-      pwMock.println("script");
+//      pwMock.print("module");
+//      pwMock.print(File.separator);
+//      pwMock.println("script");
       pwMock.flush();
       pwMock.close();
       expect(fileMock.getAbsolutePath()).andReturn("absolute").times(2);
@@ -110,7 +108,7 @@ public class CompressMojoTest {
       expect(brMock.readLine()).andReturn(null);
 
       // compress
-      expectNew(ProcessBuilder.class, "./compress.sh").andReturn(pbMock);
+      expectNew(ProcessBuilder.class, "./qunit.sh").andReturn(pbMock);
       expectNew(File.class, "jall").andReturn(fileMock);
       expect(pbMock.directory(fileMock)).andReturn(pbMock);
       expect(pbMock.start()).andReturn(pMock);
@@ -131,7 +129,7 @@ public class CompressMojoTest {
    public void testExecuteWindows() throws Exception {
 
       expectNew(File.class, "jall").andReturn(dirMock);
-      expectNew(File.class, dirMock, "compress.bat").andReturn(fileMock);
+      expectNew(File.class, dirMock, "qunit.bat").andReturn(fileMock);
       expect(fileMock.setExecutable(Boolean.TRUE)).andReturn(Boolean.TRUE);
       expectNew(FileWriter.class, fileMock).andReturn(fwMock);
       expectNew(PrintWriter.class, fwMock).andReturn(pwMock);
@@ -140,15 +138,15 @@ public class CompressMojoTest {
       pwMock.print(File.separator);
       pwMock.println("final");
       pwMock.print("js.bat ");
-      pwMock.print("module");
-      pwMock.print(File.separator);
-      pwMock.println("script");
+//      pwMock.print("module");
+//      pwMock.print(File.separator);
+//      pwMock.println("script");
       pwMock.flush();
       pwMock.close();
       expect(fileMock.getAbsolutePath()).andReturn("absolute");
 
       // compress
-      expectNew(ProcessBuilder.class, "cmd", "/c", "compress.bat").andReturn(pbMock);
+      expectNew(ProcessBuilder.class, "cmd", "/c", "qunit.bat").andReturn(pbMock);
       expectNew(File.class, "jall").andReturn(fileMock);
       expect(pbMock.directory(fileMock)).andReturn(pbMock);
       expect(pbMock.start()).andReturn(pMock);
