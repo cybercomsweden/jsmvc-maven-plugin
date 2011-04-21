@@ -53,6 +53,11 @@ public abstract class AbstractJavaScriptMVCMojo extends AbstractMojo {
    protected String finalName;
 
    /**
+    * @parameter expression="${moduleName}"
+    * @required
+    */
+   protected String moduleName;
+   /**
     * {@inheritDoc}
     */
    @Override

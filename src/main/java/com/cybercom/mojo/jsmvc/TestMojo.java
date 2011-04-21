@@ -40,16 +40,23 @@ public class TestMojo extends AbstractJavaScriptMVCMojo {
    private static final String QUNIT_SCRIPT_WINDOWS = "qunit.bat";
 
    /**
+    * @parameter expression="${testConfiguration}" default-value="qunit.html"
+    * @required
+    */
+   private String testConfiguration;
+
+   /**
     * {@inheritDoc}}
     */
    @Override
    protected void executeLinux() throws MojoExecutionException {
       try {
 
-         File compressFile = createQUnitScriptLinux();
-         executeCommand("chmod", "+x", compressFile.getAbsolutePath());
-         executeCommand("chmod", "+x", outputDirectory + "/" + finalName + "/js");
-         getLog().info("Executing script " + compressFile.getAbsolutePath().replaceAll(" ", "\\ "));
+         File testFile = createQUnitScriptLinux();
+         executeCommand("chmod", "+x", testFile.getAbsolutePath());
+         executeCommand("chmod", "+x", outputDirectory + "/" + finalName + "/funcunit/envjs");
+         getLog().info("chmod +x on " + outputDirectory + "/" + finalName + "/funcunit/envjs");
+         getLog().info("Executing script " + testFile.getAbsolutePath().replaceAll(" ", "\\ "));
          executeCommand("./" + QUNIT_SCRIPT_LINUX);
 
       } catch (IOException e) {
@@ -85,10 +92,10 @@ public class TestMojo extends AbstractJavaScriptMVCMojo {
       writer.print(outputDirectory);
       writer.print(File.separator);
       writer.println(finalName);
-      writer.print("./js ");
-//      writer.print(moduleName);
-//      writer.print(File.separator);
-//      writer.println(buildScript);
+      writer.print("funcunit/envjs ");
+      writer.print(moduleName);
+      writer.print(File.separator);
+      writer.println(testConfiguration);
 
       writer.flush();
       writer.close();

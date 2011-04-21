@@ -39,11 +39,6 @@ public class CompressMojo extends AbstractJavaScriptMVCMojo {
    private static final String COMPRESS_SCRIPT_LINUX = "compress.sh";
    private static final String COMPRESS_SCRIPT_WINDOWS = "compress.bat";
    /**
-    * @parameter expression="${moduleName}"
-    * @required
-    */
-   private String moduleName;
-   /**
     * @parameter expression="${buildScript}" default-value="scripts${file.separator}build.js"
     * @required
     */

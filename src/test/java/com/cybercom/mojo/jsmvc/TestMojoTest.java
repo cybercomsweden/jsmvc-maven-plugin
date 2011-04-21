@@ -59,8 +59,8 @@ public class TestMojoTest {
    public void setup() {
       setInternalState(mojo, "outputDirectory", "jall");
       setInternalState(mojo, "finalName", "final");
-//      setInternalState(mojo, "moduleName", "module");
-//      setInternalState(mojo, "buildScript", "script");
+      setInternalState(mojo, "moduleName", "module");
+      setInternalState(mojo, "testConfiguration", "qunit.html");
    }
 
    /**
@@ -79,10 +79,10 @@ public class TestMojoTest {
       pwMock.print("jall");
       pwMock.print(File.separator);
       pwMock.println("final");
-      pwMock.print("./js ");
-//      pwMock.print("module");
-//      pwMock.print(File.separator);
-//      pwMock.println("script");
+      pwMock.print("funcunit/envjs ");
+      pwMock.print("module");
+      pwMock.print(File.separator);
+      pwMock.println("qunit.html");
       pwMock.flush();
       pwMock.close();
       expect(fileMock.getAbsolutePath()).andReturn("absolute").times(2);
@@ -98,7 +98,7 @@ public class TestMojoTest {
       expect(brMock.readLine()).andReturn(null);
 
       // chmod on js
-      expectNew(ProcessBuilder.class, "chmod", "+x", "jall/final/js").andReturn(pbMock);
+      expectNew(ProcessBuilder.class, "chmod", "+x", "jall/final/funcunit/envjs").andReturn(pbMock);
       expectNew(File.class, "jall").andReturn(fileMock);
       expect(pbMock.directory(fileMock)).andReturn(pbMock);
       expect(pbMock.start()).andReturn(pMock);
