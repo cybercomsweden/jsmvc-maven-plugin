@@ -21,6 +21,10 @@
  */
 package com.cybercom.mojo.jsmvc;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import org.apache.maven.plugin.MojoExecutionException;
 
 /**
@@ -32,16 +36,46 @@ import org.apache.maven.plugin.MojoExecutionException;
  */
 public class DocumentMojo extends AbstractJavaScriptMVCMojo {
 
-   private static final String DOCUMENT_SCRIPT_LINUX = "compress.sh";
-   private static final String DOCUMENT_SCRIPT_WINDOWS = "compress.bat";
+   private static final String DOCUMENT_SCRIPT_LINUX = "document.sh";
+   private static final String DOCUMENT_SCRIPT_WINDOWS = "document.bat";
 
    @Override
    protected void executeLinux() throws MojoExecutionException {
-      throw new UnsupportedOperationException("Not supported yet.");
+
+      try {
+         File docFile = createDocumentScriptLinux();
+         executeCommand("chmod", "+x", docFile.getAbsolutePath());
+         executeCommand("chmod", "+x", "documentjs/doc");
+         getLog().info("Executing script " + docFile.getAbsolutePath().replaceAll(" ", "\\ "));
+         executeCommand("./" + DOCUMENT_SCRIPT_LINUX);
+
+      } catch (IOException e) {
+         throw new MojoExecutionException(e.getMessage());
+      }
+
+
    }
 
    @Override
    protected void executeWindows() throws MojoExecutionException {
       throw new UnsupportedOperationException("Not supported yet.");
+   }
+
+   private File createDocumentScriptLinux() throws IOException {
+
+      File targetDir = new File("jall");
+      File file = new File(targetDir, DOCUMENT_SCRIPT_LINUX);
+
+      file.setExecutable(true);
+
+      PrintWriter writer = new PrintWriter(new FileWriter(file));
+      writer.println("#!/bin/bash");
+      writer.print("documentjs/doc ");
+      writer.println(moduleName);
+
+      writer.flush();
+      writer.close();
+
+      return file;
    }
 }

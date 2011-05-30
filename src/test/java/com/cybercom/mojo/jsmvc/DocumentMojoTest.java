@@ -21,6 +21,12 @@
  */
 package com.cybercom.mojo.jsmvc;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,13 +45,76 @@ import static org.powermock.reflect.Whitebox.*;
 @PrepareForTest(DocumentMojo.class)
 public class DocumentMojoTest {
 
-   private CompressMojo mojo = new CompressMojo();
+   private File dirMock = createMock(File.class);
+   private File fileMock = createMock(File.class);
+   private FileWriter fwMock = createMock(FileWriter.class);
+   private PrintWriter pwMock = createMock(PrintWriter.class);
+   private ProcessBuilder pbMock = createMock(ProcessBuilder.class);
+   private Process pMock = createMock(Process.class);
+   private InputStream isMock = createMock(InputStream.class);
+   private InputStreamReader isrMock = createMock(InputStreamReader.class);
+   private BufferedReader brMock = createMock(BufferedReader.class);
+   private DocumentMojo mojo = new DocumentMojo();
 
    @Before
    public void setup() {
       setInternalState(mojo, "outputDirectory", "jall");
       setInternalState(mojo, "finalName", "final");
       setInternalState(mojo, "moduleName", "module");
-      setInternalState(mojo, "buildScript", "script");
+//      setInternalState(mojo, "documentScript", "script");
+   }
+
+   /**
+    * Test of executeLinux method, of class CompressMojo.
+    */
+   @Test
+   public void testExecuteLinux() throws Exception {
+
+      expectNew(File.class, "jall").andReturn(dirMock);
+      expectNew(File.class, dirMock, "document.sh").andReturn(fileMock);
+      expect(fileMock.setExecutable(Boolean.TRUE)).andReturn(Boolean.TRUE);
+      expectNew(FileWriter.class, fileMock).andReturn(fwMock);
+      expectNew(PrintWriter.class, fwMock).andReturn(pwMock);
+      pwMock.println("#!/bin/bash");
+      pwMock.print("documentjs/doc ");
+      pwMock.println("module");
+      pwMock.flush();
+      pwMock.close();
+      expect(fileMock.getAbsolutePath()).andReturn("absolute").times(2);
+
+      // chmod on script
+      expectNew(ProcessBuilder.class, "chmod", "+x", "absolute").andReturn(pbMock);
+      expectNew(File.class, "jall").andReturn(fileMock);
+      expect(pbMock.directory(fileMock)).andReturn(pbMock);
+      expect(pbMock.start()).andReturn(pMock);
+      expect(pMock.getInputStream()).andReturn(isMock);
+      expectNew(InputStreamReader.class, isMock).andReturn(isrMock);
+      expectNew(BufferedReader.class, isrMock).andReturn(brMock);
+      expect(brMock.readLine()).andReturn(null);
+
+      // chmod on doc
+      expectNew(ProcessBuilder.class, "chmod", "+x", "documentjs/doc").andReturn(pbMock);
+      expectNew(File.class, "jall").andReturn(fileMock);
+      expect(pbMock.directory(fileMock)).andReturn(pbMock);
+      expect(pbMock.start()).andReturn(pMock);
+      expect(pMock.getInputStream()).andReturn(isMock);
+      expectNew(InputStreamReader.class, isMock).andReturn(isrMock);
+      expectNew(BufferedReader.class, isrMock).andReturn(brMock);
+      expect(brMock.readLine()).andReturn(null);
+
+      // compress
+      expectNew(ProcessBuilder.class, "./document.sh").andReturn(pbMock);
+      expectNew(File.class, "jall").andReturn(fileMock);
+      expect(pbMock.directory(fileMock)).andReturn(pbMock);
+      expect(pbMock.start()).andReturn(pMock);
+      expect(pMock.getInputStream()).andReturn(isMock);
+      expectNew(InputStreamReader.class, isMock).andReturn(isrMock);
+      expectNew(BufferedReader.class, isrMock).andReturn(brMock);
+      expect(brMock.readLine()).andReturn(null);
+      
+      replayAll();
+      mojo.executeLinux();
+      verifyAll();
+
    }
 }
