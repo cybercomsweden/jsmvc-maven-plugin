@@ -76,6 +76,10 @@ public class DocumentMojoTest {
       expectNew(FileWriter.class, fileMock).andReturn(fwMock);
       expectNew(PrintWriter.class, fwMock).andReturn(pwMock);
       pwMock.println("#!/bin/bash");
+      pwMock.print("cd ");
+      pwMock.print("jall");
+      pwMock.print(File.separator);
+      pwMock.println("final");
       pwMock.print("documentjs/doc ");
       pwMock.println("module");
       pwMock.flush();
@@ -102,7 +106,7 @@ public class DocumentMojoTest {
       expectNew(BufferedReader.class, isrMock).andReturn(brMock);
       expect(brMock.readLine()).andReturn(null);
 
-      // compress
+      // document
       expectNew(ProcessBuilder.class, "./document.sh").andReturn(pbMock);
       expectNew(File.class, "jall").andReturn(fileMock);
       expect(pbMock.directory(fileMock)).andReturn(pbMock);

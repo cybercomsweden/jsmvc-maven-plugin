@@ -30,7 +30,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 /**
  * @goal document
  * @phase package
- * @description Documents application using the underlaying DocumentJS
+ * @description Documents application using the underlying DocumentJS
  * 
  * @author Ivar Grimstad (ivar.grimstad@cybercom.com)
  */
@@ -39,6 +39,9 @@ public class DocumentMojo extends AbstractJavaScriptMVCMojo {
    private static final String DOCUMENT_SCRIPT_LINUX = "document.sh";
    private static final String DOCUMENT_SCRIPT_WINDOWS = "document.bat";
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    protected void executeLinux() throws MojoExecutionException {
 
@@ -52,10 +55,11 @@ public class DocumentMojo extends AbstractJavaScriptMVCMojo {
       } catch (IOException e) {
          throw new MojoExecutionException(e.getMessage());
       }
-
-
    }
 
+   /**
+    * {@inheritDoc}
+    */
    @Override
    protected void executeWindows() throws MojoExecutionException {
       throw new UnsupportedOperationException("Not supported yet.");
@@ -63,13 +67,17 @@ public class DocumentMojo extends AbstractJavaScriptMVCMojo {
 
    private File createDocumentScriptLinux() throws IOException {
 
-      File targetDir = new File("jall");
+      File targetDir = new File(outputDirectory);
       File file = new File(targetDir, DOCUMENT_SCRIPT_LINUX);
 
       file.setExecutable(true);
 
       PrintWriter writer = new PrintWriter(new FileWriter(file));
       writer.println("#!/bin/bash");
+      writer.print("cd ");
+      writer.print(outputDirectory);
+      writer.print(File.separator);
+      writer.println(finalName);
       writer.print("documentjs/doc ");
       writer.println(moduleName);
 
