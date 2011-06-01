@@ -38,6 +38,13 @@ public class DocumentMojo extends AbstractJavaScriptMVCMojo {
 
    private static final String DOCUMENT_SCRIPT_LINUX = "document.sh";
    private static final String DOCUMENT_SCRIPT_WINDOWS = "document.bat";
+   /**
+    * Source location.
+    *
+    * @parameter expression="${basedir}${file.separator}src${file.separator}main${file.separator}webapp"
+    * @required
+    */
+   protected String srcDirectory;
 
    /**
     * {@inheritDoc}
@@ -45,6 +52,7 @@ public class DocumentMojo extends AbstractJavaScriptMVCMojo {
    @Override
    protected void executeLinux() throws MojoExecutionException {
 
+      getLog().info("SOURCE: " + srcDirectory);
       try {
          File docFile = createDocumentScriptLinux();
          executeCommand("chmod", "+x", docFile.getAbsolutePath());
@@ -74,12 +82,18 @@ public class DocumentMojo extends AbstractJavaScriptMVCMojo {
 
       PrintWriter writer = new PrintWriter(new FileWriter(file));
       writer.println("#!/bin/bash");
-      writer.print("cd ");
+      writer.print("mkdir ");
       writer.print(outputDirectory);
       writer.print(File.separator);
-      writer.println(finalName);
+      writer.println("docs");
+      writer.print("cd ");
+      writer.println(srcDirectory);
       writer.print("documentjs/doc ");
-      writer.println(moduleName);
+      writer.print(moduleName);  
+      writer.print(" -out ");
+      writer.print(outputDirectory);
+      writer.print(File.separator);
+      writer.println("docs");
 
       writer.flush();
       writer.close();

@@ -58,10 +58,10 @@ public class DocumentMojoTest {
 
    @Before
    public void setup() {
-      setInternalState(mojo, "outputDirectory", "jall");
+      setInternalState(mojo, "outputDirectory", "out");
       setInternalState(mojo, "finalName", "final");
       setInternalState(mojo, "moduleName", "module");
-//      setInternalState(mojo, "documentScript", "script");
+      setInternalState(mojo, "srcDirectory", "srcDir");
    }
 
    /**
@@ -70,25 +70,31 @@ public class DocumentMojoTest {
    @Test
    public void testExecuteLinux() throws Exception {
 
-      expectNew(File.class, "jall").andReturn(dirMock);
+      expectNew(File.class, "out").andReturn(dirMock);
       expectNew(File.class, dirMock, "document.sh").andReturn(fileMock);
       expect(fileMock.setExecutable(Boolean.TRUE)).andReturn(Boolean.TRUE);
       expectNew(FileWriter.class, fileMock).andReturn(fwMock);
       expectNew(PrintWriter.class, fwMock).andReturn(pwMock);
       pwMock.println("#!/bin/bash");
-      pwMock.print("cd ");
-      pwMock.print("jall");
+      pwMock.print("mkdir ");
+      pwMock.print("out");
       pwMock.print(File.separator);
-      pwMock.println("final");
+      pwMock.println("docs");
+      pwMock.print("cd ");
+      pwMock.println("srcDir");
       pwMock.print("documentjs/doc ");
-      pwMock.println("module");
+      pwMock.print("module");
+      pwMock.print(" -out ");
+      pwMock.print("out");
+      pwMock.print(File.separator);
+      pwMock.println("docs");
       pwMock.flush();
       pwMock.close();
       expect(fileMock.getAbsolutePath()).andReturn("absolute").times(2);
 
       // chmod on script
       expectNew(ProcessBuilder.class, "chmod", "+x", "absolute").andReturn(pbMock);
-      expectNew(File.class, "jall").andReturn(fileMock);
+      expectNew(File.class, "out").andReturn(fileMock);
       expect(pbMock.directory(fileMock)).andReturn(pbMock);
       expect(pbMock.start()).andReturn(pMock);
       expect(pMock.getInputStream()).andReturn(isMock);
@@ -98,7 +104,7 @@ public class DocumentMojoTest {
 
       // chmod on doc
       expectNew(ProcessBuilder.class, "chmod", "+x", "documentjs/doc").andReturn(pbMock);
-      expectNew(File.class, "jall").andReturn(fileMock);
+      expectNew(File.class, "out").andReturn(fileMock);
       expect(pbMock.directory(fileMock)).andReturn(pbMock);
       expect(pbMock.start()).andReturn(pMock);
       expect(pMock.getInputStream()).andReturn(isMock);
@@ -108,7 +114,7 @@ public class DocumentMojoTest {
 
       // document
       expectNew(ProcessBuilder.class, "./document.sh").andReturn(pbMock);
-      expectNew(File.class, "jall").andReturn(fileMock);
+      expectNew(File.class, "out").andReturn(fileMock);
       expect(pbMock.directory(fileMock)).andReturn(pbMock);
       expect(pbMock.start()).andReturn(pMock);
       expect(pMock.getInputStream()).andReturn(isMock);
