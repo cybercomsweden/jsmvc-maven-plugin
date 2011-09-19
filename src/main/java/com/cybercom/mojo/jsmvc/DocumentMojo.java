@@ -56,7 +56,7 @@ public class DocumentMojo extends AbstractJavaScriptMVCMojo {
       try {
          File docFile = createDocumentScriptLinux();
          executeCommand("chmod", "+x", docFile.getAbsolutePath());
-         executeCommand("chmod", "+x", "documentjs/doc");
+//         executeCommand("chmod", "+x", "documentjs/doc");
          getLog().info("Executing script " + docFile.getAbsolutePath().replaceAll(" ", "\\ "));
          executeCommand("./" + DOCUMENT_SCRIPT_LINUX);
 
@@ -82,18 +82,20 @@ public class DocumentMojo extends AbstractJavaScriptMVCMojo {
 
       PrintWriter writer = new PrintWriter(new FileWriter(file));
       writer.println("#!/bin/bash");
-      writer.print("mkdir ");
-      writer.print(outputDirectory);
-      writer.print(File.separator);
-      writer.println("docs");
       writer.print("cd ");
-      writer.println(srcDirectory);
-      writer.print("documentjs/doc ");
-      writer.print(moduleName);  
-      writer.print(" -out ");
       writer.print(outputDirectory);
       writer.print(File.separator);
+      writer.println(finalName);
+      writer.print("mkdir ");
+      writer.print(moduleName);
+      writer.print(File.separator);
       writer.println("docs");
+      writer.println("chmod +x documentjs/doc");
+      writer.print("./documentjs/doc ");
+      writer.print(moduleName);  
+      writer.print(File.separator);
+      writer.print(moduleName);
+      writer.println(".html");
 
       writer.flush();
       writer.close();
