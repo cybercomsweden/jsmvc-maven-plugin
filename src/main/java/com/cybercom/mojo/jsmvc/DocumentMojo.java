@@ -56,7 +56,6 @@ public class DocumentMojo extends AbstractJavaScriptMVCMojo {
       try {
          File docFile = createDocumentScriptLinux();
          executeCommand("chmod", "+x", docFile.getAbsolutePath());
-//         executeCommand("chmod", "+x", "documentjs/doc");
          getLog().info("Executing script " + docFile.getAbsolutePath().replaceAll(" ", "\\ "));
          executeCommand("./" + DOCUMENT_SCRIPT_LINUX);
 
@@ -70,7 +69,16 @@ public class DocumentMojo extends AbstractJavaScriptMVCMojo {
     */
    @Override
    protected void executeWindows() throws MojoExecutionException {
-      throw new UnsupportedOperationException("Not supported yet.");
+
+      try {
+
+         File compressFile = createDocumentScriptWindows();
+         getLog().info("Executing script " + compressFile.getAbsolutePath());
+         executeCommand("cmd", "/c", DOCUMENT_SCRIPT_WINDOWS);
+
+      } catch (IOException e) {
+         throw new MojoExecutionException(e.getMessage());
+      }
    }
 
    private File createDocumentScriptLinux() throws IOException {
@@ -92,7 +100,7 @@ public class DocumentMojo extends AbstractJavaScriptMVCMojo {
       writer.println("docs");
       writer.println("chmod +x documentjs/doc");
       writer.print("./documentjs/doc ");
-      writer.print(moduleName);  
+      writer.print(moduleName);
       writer.print(File.separator);
       writer.print(moduleName);
       writer.println(".html");
@@ -100,6 +108,32 @@ public class DocumentMojo extends AbstractJavaScriptMVCMojo {
       writer.flush();
       writer.close();
 
+      return file;
+   }
+
+   private File createDocumentScriptWindows() throws IOException {
+
+      File targetDir = new File(outputDirectory);
+      File file = new File(targetDir, DOCUMENT_SCRIPT_WINDOWS);
+      file.setExecutable(true);
+
+      PrintWriter writer = new PrintWriter(new FileWriter(file));
+      writer.print("cd ");
+      writer.print(outputDirectory);
+      writer.print(File.separator);
+      writer.println(finalName);
+      writer.print("mkdir ");
+      writer.print(moduleName);
+      writer.print(File.separator);
+      writer.println("docs");
+      writer.print("documentjs\\doc.bat ");
+      writer.print(moduleName);
+      writer.print(File.separator);
+      writer.print(moduleName);
+      writer.println(".html");
+
+      writer.flush();
+      writer.close();
       return file;
    }
 }

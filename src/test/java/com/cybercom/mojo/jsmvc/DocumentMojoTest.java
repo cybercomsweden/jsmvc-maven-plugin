@@ -86,7 +86,7 @@ public class DocumentMojoTest {
       pwMock.println("docs");
       pwMock.println("chmod +x documentjs/doc");
       pwMock.print("./documentjs/doc ");
-      pwMock.print("module");  
+      pwMock.print("module");
       pwMock.print(File.separator);
       pwMock.print("module");
       pwMock.println(".html");
@@ -113,10 +113,53 @@ public class DocumentMojoTest {
       expectNew(InputStreamReader.class, isMock).andReturn(isrMock);
       expectNew(BufferedReader.class, isrMock).andReturn(brMock);
       expect(brMock.readLine()).andReturn(null);
-      
+
       replayAll();
       mojo.executeLinux();
       verifyAll();
+   }
 
+   /**
+    * Test of executeWindows method, of class CompressMojo.
+    */
+   @Test
+   public void testExecuteWindows() throws Exception {
+
+      expectNew(File.class, "out").andReturn(dirMock);
+      expectNew(File.class, dirMock, "document.bat").andReturn(fileMock);
+      expect(fileMock.setExecutable(Boolean.TRUE)).andReturn(Boolean.TRUE);
+      expectNew(FileWriter.class, fileMock).andReturn(fwMock);
+      expectNew(PrintWriter.class, fwMock).andReturn(pwMock);
+      pwMock.print("cd ");
+      pwMock.print("out");
+      pwMock.print(File.separator);
+      pwMock.println("final");
+      pwMock.print("mkdir ");
+      pwMock.print("module");
+      pwMock.print(File.separator);
+      pwMock.println("docs");
+      pwMock.print("documentjs\\doc.bat ");
+      pwMock.print("module");
+      pwMock.print(File.separator);
+      pwMock.print("module");
+      pwMock.println(".html");
+      pwMock.flush();
+      pwMock.close();
+      
+      expect(fileMock.getAbsolutePath()).andReturn("absolute");
+
+      // compress
+      expectNew(ProcessBuilder.class, "cmd", "/c", "document.bat").andReturn(pbMock);
+      expectNew(File.class, "out").andReturn(fileMock);
+      expect(pbMock.directory(fileMock)).andReturn(pbMock);
+      expect(pbMock.start()).andReturn(pMock);
+      expect(pMock.getInputStream()).andReturn(isMock);
+      expectNew(InputStreamReader.class, isMock).andReturn(isrMock);
+      expectNew(BufferedReader.class, isrMock).andReturn(brMock);
+      expect(brMock.readLine()).andReturn(null);
+
+      replayAll();
+      mojo.executeWindows();
+      verifyAll();
    }
 }
