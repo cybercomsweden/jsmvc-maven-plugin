@@ -87,6 +87,20 @@
       <connection>scm:hg:file://${basedir}</connection>
       <developerConnection>scm:hg:file://${basedir}</developerConnection>
    </scm>
+   
+       <distributionManagement>
+        <repository>
+            <id>releases</id>
+            <name>Released artifacts</name>
+            <url>http://nexus.css.cybercom.se/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>snapshots</id>
+            <name>Snapshots</name>
+            <url>http://nexus.css.cybercom.se/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 
    <properties xmlns="http://www.netbeans.org/ns/maven-properties-data/1">
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
