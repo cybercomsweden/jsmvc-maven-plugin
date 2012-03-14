@@ -1,23 +1,18 @@
 /**
  * Copyright (C) 2011 by Cybercom Sweden AB
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+ * documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the
+ * Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 package com.cybercom.mojo.jsmvc;
 
@@ -33,7 +28,7 @@ import org.apache.maven.plugin.MojoFailureException;
 
 /**
  * Abstract base class for JavaScriptMVC maven plugins.
- * 
+ *
  * @author Ivar Grimstad (ivar.grimstad@cybercom.com)
  */
 public abstract class AbstractJavaScriptMVCMojo extends AbstractMojo {
@@ -41,22 +36,18 @@ public abstract class AbstractJavaScriptMVCMojo extends AbstractMojo {
    /**
     * Location of the file.
     *
-    * @parameter expression="${project.build.directory}"
-    * @required
+    * @parameter expression="${project.build.directory}" @required
     */
    protected String outputDirectory;
-
    /**
-    * @parameter expression="${project.build.finalName}"
-    * @required
+    * @parameter expression="${project.build.finalName}" @required
     */
    protected String finalName;
-
    /**
-    * @parameter expression="${moduleName}"
-    * @required
+    * @parameter expression="${moduleName}" @required
     */
    protected String moduleName;
+
    /**
     * {@inheritDoc}
     */
@@ -74,19 +65,18 @@ public abstract class AbstractJavaScriptMVCMojo extends AbstractMojo {
          executeLinux();
       }
    }
-   
+
    /**
     * Executes os specific command.
-    * 
+    *
     * @param cmd the command(s)
     */
    protected void executeCommand(String... cmd) {
-      try {
-         ProcessBuilder pb = new ProcessBuilder(cmd);
-         pb.directory(new File(outputDirectory));
-         Process pr = pb.start();
-         InputStream is = pr.getInputStream();
-         InputStreamReader isr = new InputStreamReader(is);
+
+      ProcessBuilder pb = new ProcessBuilder(cmd);
+      pb.directory(new File(outputDirectory));
+
+      try (InputStreamReader isr = new InputStreamReader(pb.start().getInputStream())) {
          BufferedReader br = new BufferedReader(isr);
          String line;
          while ((line = br.readLine()) != null) {
@@ -95,17 +85,20 @@ public abstract class AbstractJavaScriptMVCMojo extends AbstractMojo {
       } catch (IOException e) {
          getLog().error("IO: " + e.getMessage());
       }
+
    }
-   
+
    /**
     * Executes on Linux.
-    * @throws MojoExecutionException 
+    *
+    * @throws MojoExecutionException
     */
    protected abstract void executeLinux() throws MojoExecutionException;
-   
+
    /**
     * Executes on Windows.
-    * @throws MojoExecutionException 
+    *
+    * @throws MojoExecutionException
     */
    protected abstract void executeWindows() throws MojoExecutionException;
 }

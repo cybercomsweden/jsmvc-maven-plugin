@@ -117,6 +117,9 @@ public class CompressMojoTest {
       expectNew(InputStreamReader.class, isMock).andReturn(isrMock);
       expectNew(BufferedReader.class, isrMock).andReturn(brMock);
       expect(brMock.readLine()).andReturn(null);
+      isrMock.close();
+      isrMock.close();
+      isrMock.close();
 
       replayAll();
       mojo.executeLinux();
@@ -155,6 +158,7 @@ public class CompressMojoTest {
       expectNew(InputStreamReader.class, isMock).andReturn(isrMock);
       expectNew(BufferedReader.class, isrMock).andReturn(brMock);
       expect(brMock.readLine()).andReturn(null);
+      isrMock.close();
 
       replayAll();
       mojo.executeWindows();

@@ -85,20 +85,19 @@ public class TestMojo extends AbstractJavaScriptMVCMojo {
       File targetDir = new File(outputDirectory);
       File file = new File(targetDir, QUNIT_SCRIPT_LINUX);
       file.setExecutable(true);
+      try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
+         writer.println("#!/bin/bash");
+         writer.print("cd ");
+         writer.print(outputDirectory);
+         writer.print(File.separator);
+         writer.println(finalName);
+         writer.print("funcunit/envjs ");
+         writer.print(moduleName);
+         writer.print(File.separator);
+         writer.println(testConfiguration);
 
-      PrintWriter writer = new PrintWriter(new FileWriter(file));
-      writer.println("#!/bin/bash");
-      writer.print("cd ");
-      writer.print(outputDirectory);
-      writer.print(File.separator);
-      writer.println(finalName);
-      writer.print("funcunit/envjs ");
-      writer.print(moduleName);
-      writer.print(File.separator);
-      writer.println(testConfiguration);
-
-      writer.flush();
-      writer.close();
+         writer.flush();
+      }
       return file;
    }
 
@@ -107,19 +106,18 @@ public class TestMojo extends AbstractJavaScriptMVCMojo {
       File targetDir = new File(outputDirectory);
       File file = new File(targetDir, QUNIT_SCRIPT_WINDOWS);
       file.setExecutable(true);
+      try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
+         writer.print("cd ");
+         writer.print(outputDirectory);
+         writer.print(File.separator);
+         writer.println(finalName);
+         writer.print("js.bat ");
+   //      writer.print(moduleName);
+   //      writer.print(File.separator);
+   //      writer.println(buildScript);
 
-      PrintWriter writer = new PrintWriter(new FileWriter(file));
-      writer.print("cd ");
-      writer.print(outputDirectory);
-      writer.print(File.separator);
-      writer.println(finalName);
-      writer.print("js.bat ");
-//      writer.print(moduleName);
-//      writer.print(File.separator);
-//      writer.println(buildScript);
-
-      writer.flush();
-      writer.close();
+         writer.flush();
+      }
       return file;
    }
 

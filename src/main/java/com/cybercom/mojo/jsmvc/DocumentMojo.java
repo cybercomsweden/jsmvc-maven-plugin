@@ -87,26 +87,25 @@ public class DocumentMojo extends AbstractJavaScriptMVCMojo {
       File file = new File(targetDir, DOCUMENT_SCRIPT_LINUX);
 
       file.setExecutable(true);
+      try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
+         writer.println("#!/bin/bash");
+         writer.print("cd ");
+         writer.print(outputDirectory);
+         writer.print(File.separator);
+         writer.println(finalName);
+         writer.print("mkdir ");
+         writer.print(moduleName);
+         writer.print(File.separator);
+         writer.println("docs");
+         writer.println("chmod +x documentjs/doc");
+         writer.print("./documentjs/doc ");
+         writer.print(moduleName);
+         writer.print(File.separator);
+         writer.print(moduleName);
+         writer.println(".html");
 
-      PrintWriter writer = new PrintWriter(new FileWriter(file));
-      writer.println("#!/bin/bash");
-      writer.print("cd ");
-      writer.print(outputDirectory);
-      writer.print(File.separator);
-      writer.println(finalName);
-      writer.print("mkdir ");
-      writer.print(moduleName);
-      writer.print(File.separator);
-      writer.println("docs");
-      writer.println("chmod +x documentjs/doc");
-      writer.print("./documentjs/doc ");
-      writer.print(moduleName);
-      writer.print(File.separator);
-      writer.print(moduleName);
-      writer.println(".html");
-
-      writer.flush();
-      writer.close();
+         writer.flush();
+      }
 
       return file;
    }
@@ -116,24 +115,23 @@ public class DocumentMojo extends AbstractJavaScriptMVCMojo {
       File targetDir = new File(outputDirectory);
       File file = new File(targetDir, DOCUMENT_SCRIPT_WINDOWS);
       file.setExecutable(true);
+      try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
+         writer.print("cd ");
+         writer.print(outputDirectory);
+         writer.print(File.separator);
+         writer.println(finalName);
+         writer.print("mkdir ");
+         writer.print(moduleName);
+         writer.print(File.separator);
+         writer.println("docs");
+         writer.print("documentjs\\doc.bat ");
+         writer.print(moduleName);
+         writer.print(File.separator);
+         writer.print(moduleName);
+         writer.println(".html");
 
-      PrintWriter writer = new PrintWriter(new FileWriter(file));
-      writer.print("cd ");
-      writer.print(outputDirectory);
-      writer.print(File.separator);
-      writer.println(finalName);
-      writer.print("mkdir ");
-      writer.print(moduleName);
-      writer.print(File.separator);
-      writer.println("docs");
-      writer.print("documentjs\\doc.bat ");
-      writer.print(moduleName);
-      writer.print(File.separator);
-      writer.print(moduleName);
-      writer.println(".html");
-
-      writer.flush();
-      writer.close();
+         writer.flush();
+      }
       return file;
    }
 }
